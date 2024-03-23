@@ -74,7 +74,82 @@ def companies_by_id(id):
         )
         return response
 
+# Wallet CRUD Endpoints
+@app.route('/wallets', methods=['GET', 'POST'])
+def wallets():
+    if request.method == 'GET':
+        wallets = []
+        for wallet in Wallet.query.all():
+            wallet_dict = wallet.to_dict()
+            wallets.append(wallet_dict)
+        response = make_response(
+            jsonify(wallets),
+            200
+        )
+        return response
+    elif request.method == 'POST':
+        new_wallet = Wallet(
+            user_id = request.form.get("user_id"),
+            balance = request.form.get("balance"),
+            bonus = request.form.get("bonus"),
+            carbon_credits= request.form.get("carbon_credits"),
+            pricing= request.form.get("pricing"),
+            currency=request.form.get("currency"),
+            buy= request.form.get("buy"),
+            deposit= request.form.get("deposit"),
+            withdraw= request.form.get("withdraw"),
+            transfer= request.form.get("transfer"),
+            payment= request.form.get("payment"),
+            account= request.form.get("account"),
+            wallet_id= request.form.get("wallet_id"),
+        )
+        db.session.add(new_wallet)
+        db.session.commit()
+        wallet_dict = new_wallet.to_dict()
 
+        response = make_response(
+            jsonify(wallet_dict),
+            201
+        )
+        return response
+    
+@app.route('/wallets/<int:id>', methods=['GET','PATCH','DELETE'])
+def wallets_by_id(id):
+    wallet =  Wallet.query.filter_by(id=id).first() 
+    if request.method == "DELETE":
+        db.session.delete(wallet)
+        db.session.commit()
+        response_body = {
+            "delete_successful": True,
+            "message": "wallet deleted."
+        }
+        response = make_response(
+            jsonify(response_body),
+            200
+        )
+        return response
+    elif request.method == 'PATCH':
+        wallet.user_id = request.form.get("user_id")
+        wallet.balance = request.form.get("balance")
+        wallet.bonus = request.form.get("bonus")
+        wallet.carbon_credits = request.form.get("carbon_credits")
+        wallet.pricing = request.form.get("pricing")
+        wallet.currency = request.form.get("currency")
+        wallet.buy = request.form.get("buy")
+        wallet.deposit = request.form.get("deposit")
+        wallet.withdraw = request.form.get("withdraw")
+        wallet.transfer = request.form.get("transfer")
+        wallet.payment = request.form.get("payment")
+        wallet.account = request.form.get("account")
+        wallet.wallet_id = request.form.get("wallet_id")
+        db.session.commit()
+        wallet_dict = wallet.to_dict()
+        response = make_response(
+            jsonify(wallet_dict),
+            200
+        )
+        return response
+    
 
         
 
