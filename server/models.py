@@ -65,7 +65,22 @@ class Wallet(db.Model):
     buy = db.Column(db.Integer)
     deposit = db.Column(db.Integer)
     transfer = db.Column(db.Integer)
-    company_id =db.Column(db.Integer, db.ForeignKey("company.id"))    
+    company_id =db.Column(db.Integer, db.ForeignKey("company.id")) 
+    
+def to_dict(self):
+    return {
+        'id': self.id,
+        'balance': self.balance,
+        'bonus': self.bonus,
+        'carbon_credits': self.carbon_credits,
+        'pricing': self.pricing,
+        'currency': self.currency,
+        'buy': self.buy,
+        'deposit': self.deposit,
+        'withdraw': self.withdraw,
+        'transfer': self.transfer,
+        
+    }   
 
 class Chat(db.Model):
     id = db.Column(db.Integer, primary_key = True)
