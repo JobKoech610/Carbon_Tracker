@@ -85,7 +85,16 @@ def to_dict(self):
 class Chat(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     class_id = db.Column(db.Integer)
-    company_id =db.Column(db.Integer, db.ForeignKey("company.id"))    
+    company_id =db.Column(db.Integer, db.ForeignKey("company.id")) 
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'class_id': self.class_id,
+            'company_id': self.company_id,
+        }  
+        
+
 
 class Payment(db.Model):
     id = db.Column(db.Integer, primary_key = True)
