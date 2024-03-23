@@ -100,7 +100,15 @@ class Payment(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     ammount =  db.Column(db.Integer)
     to_us = db.Column(db.String)
-    company_id =db.Column(db.Integer, db.ForeignKey("company.id"))    
+    company_id =db.Column(db.Integer, db.ForeignKey("company.id")) 
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'ammount': self.ammount,
+            'to_us': self.to_us,
+            'company_id': self.company_id,
+        }   
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key = True)
