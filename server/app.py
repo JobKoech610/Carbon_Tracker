@@ -150,6 +150,156 @@ def wallets_by_id(id):
         )
         return response
     
+# Chat CRUD Endpoints
+@app.route('/chats', methods=['GET', 'POST'])
+def chats():
+    if request.method == 'GET':
+        chats = []
+        for chat in Chat.query.all():
+            chat_dict = chat.to_dict()
+            chats.append(chat_dict)
+        response = make_response(
+            jsonify(chats),
+            200
+        )
+        return response
+    elif request.method == 'POST':
+        new_chat = Chat(
+            user_id = request.form.get("user_id"),
+            message = request.form.get("message"),
+            time = request.form.get("time"),
+            chat_id = request.form.get("chat_id"),
+            channel_id = request.form.get("channel_id"),
+        )
+        db.session.add(new_chat)
+        db.session.commit()
+        chat_dict = new_chat.to_dict()
+
+        response = make_response(
+            jsonify(chat_dict),
+            201
+        )
+        return response
+
+@app.route("/chats/<int:id>", methods=["GET", "PATCH", "DELETE"])
+def single_chat(id):
+    chat = Chat.query.get(id)
+    if request.method == "GET":
+        chat_dict = chat.to_dict()
+        response = make_response(
+            jsonify(chat_dict),
+            200
+        )
+        return response
+    elif request.method == "PATCH":
+        chat.user_id = request.form.get("user_id")
+        chat.message = request.form.get("message")
+        chat.time = request.form.get("time")
+        chat.chat_id = request.form.get("chat_id")
+        chat.channel_id = request.form.get("channel_id")
+        db.session.commit()
+        chat_dict = chat.to_dict()
+        response = make_response(
+            jsonify(chat_dict),
+            200
+        )
+        return response
+    elif request.method == "DELETE":
+        db.session.delete(chat)
+        db.session.commit()
+        response_body = {
+            "delete_successful": True,
+            "message": "chat deleted."
+        }
+        response = make_response(
+            jsonify(response_body),
+            200
+        )
+        return response
+    
+
+# Payment CRUD Endpoints
+
+@app.route('/payments', methods=['GET', 'POST'])
+def payments():
+    if request.method == 'GET':
+        payments = []
+        for payment in Payment.query.all():
+            payment_dict = payment.to_dict()
+            payments.append(payment_dict)
+        response = make_response(
+            jsonify(payments),
+            200
+        )
+        return response
+    elif request.method == 'POST':
+        new_payment = Payment(
+            user_id = request.form.get("user_id"),
+            amount = request.form.get("amount"),
+            currency = request.form.get("currency"),
+            payment_id = request.form.get("payment_id"),
+            wallet_id = request.form.get("wallet_id"),
+            payment_type = request.form.get("payment_type"),
+            time = request.form.get("time"),
+            status = request.form.get("status"),
+        )
+        db.session.add(new_payment)
+        db.session.commit()
+        payment_dict = new_payment.to_dict()
+
+        response = make_response(
+            jsonify(payment_dict),
+            201
+        )
+        return response
+        
+@app.route('/payments/<int:id>', methods=['GET','PATCH','DELETE'])
+def payment_by_id(id):
+    payment =  Payment.query.filter_by(id=id).first() 
+    if request.method == "DELETE":
+        db.session.delete(payment)
+        db.session.commit()
+        response_body = {
+            "delete_successful": True,
+            "message": "payment deleted."
+        }
+        response = make_response(
+            jsonify(response_body),
+            200
+        )
+        return response
+    elif request.method == 'PATCH':
+        payment.user_id = request.form.get("user_id")
+        payment.amount = request.form.get("amount")
+        payment.currency = request.form.get("currency")
+        payment.payment_id = request.form.get("payment_id")
+        payment.wallet_id = request.form.get("wallet_id")
+        payment.payment_type = request.form.get("payment_type")
+        payment.time = request.form.get("time")
+        payment.status = request.form.get("status")
+        db.session.commit()
+        payment_dict = payment.to_dict()
+        response = make_response(
+            jsonify(payment_dict),
+            200
+        )
+        return response
+    else: # GET method
+        payment_dict = payment.to_dict()
+        response = make_response(
+            jsonify(payment_dict),
+            200
+        )
+        return response
+        
+# Error handlers
+@app.errorhandler(404)
+def not_found_error(e):
+    return make_response(jsonify({"error": "Not found"}), 404)
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8000, debug=True)
+    
 
         
 
