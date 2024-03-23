@@ -61,18 +61,139 @@ def companies():
 @app.route('/companies/<int:id>', methods=['GET','PATCH','DELETE'])
 def companies_by_id(id):
     company =  Company.query.filter_by(id=id).first() 
-    if request.method == "DELETE":
-        db.session.delete(company)
-        db.session.commit()
+    if company == None:
         response_body = {
-            "delete_successful": True,
-            "message": "company deleted."
+            "message": "This record does not exist in our database. Please try again."
         }
+        response = make_response(jsonify(response_body), 404)
+
+        return response
+    else:
+        if request.method == "DELETE":
+            db.session.delete(company)
+            db.session.commit()
+            response_body = {
+                "delete_successful": True,
+                "message": "company deleted."
+            }
+            response = make_response(
+                jsonify(response_body),
+                200
+            )
+            return response
+        elif request.method == 'GET':
+            company_dict = company.to_dict()
+
+            response = make_response(
+                jsonify(company_dict),
+                200
+            )
+
+            return response
+        elif request.method == 'PATCH':
+            company = Company.query.filter_by(id=id).first()
+
+            for attr in request.form:
+                setattr(company, attr, request.form.get(attr))
+
+            db.session.add(company)
+            db.session.commit()
+
+            company_dict = company.to_dict()
+
+            response = make_response(
+                jsonify(company_dict),
+                200
+            )
+
+            return response
+
+
+
+#class endpoint
+@app.route('/classes', methods=['GET', 'POST', 'DELETE'])
+def classes():
+    if request.method == 'GET':
+        classes = []
+        for clas in Class.query.all():
+            # company_dict = company.to_dict()
+            class_dict = {
+                "green_carbon": clas.green_carbon,
+                "carbon_emmision": clas.carbon_emmision,
+                "blue_carbon": clas.blue_carbon,
+                
+            }
+            classes.append(class_dict)
         response = make_response(
-            jsonify(response_body),
+            jsonify(classes),
             200
+        )    
+        return response
+    elif request.method == 'POST':
+        new_class = Class(
+            green_carbon = request.form.get("green_carbon"),
+            carbon_emmision = request.form.get("carbon_emmision"),
+            blue_carbon = request.form.get("blue_carbon"),            
+        )    
+        db.session.add(new_class)
+        db.session.commit()
+        class_dict = new_class.to_dict()
+
+        response = make_response(
+            jsonify(class_dict),
+            201
         )
         return response
+@app.route('/classes/<int:id>', methods=['GET','PATCH','DELETE'])
+def classes_by_id(id):
+    clas =  Class.query.filter_by(id=id).first() 
+    if clas == None:
+        response_body = {
+            "message": "This record does not exist in our database. Please try again."
+        }
+        response = make_response(jsonify(response_body), 404)
+        return response
+    else:
+        if request.method == "DELETE":
+            db.session.delete(clas)
+            db.session.commit()
+            response_body = {
+                "delete_successful": True,
+                "message": "company deleted."
+            }
+            response = make_response(
+                jsonify(response_body),
+                200
+            )
+            return response
+        elif request.method == 'GET':
+            clas_dict = clas.to_dict()
+            response = make_response(
+                jsonify(clas_dict),
+                200
+            )
+            return response 
+        elif request.method == 'PATCH':
+            clas = Class.query.filter_by(id=id).first()
+            for attr in request.form:
+                setattr(clas, attr, request.form.get(attr))
+            db.session.add(clas)
+            db.session.commit()
+            clas_dict = clas.to_dict()
+            response = make_response(
+                jsonify(clas_dict),
+                200
+            )
+            return response  
+        else:
+            # Handle unsupported methods
+            response_body = {
+                "message": "Method not allowed for this endpoint."
+            }
+            response = make_response(jsonify(response_body), 405)
+            return response
+
+
 
 
 

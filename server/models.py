@@ -47,7 +47,6 @@ class Company(db.Model):
             'location': self.location,
             'size': self.size,
             'account': self.account,
-            # Add more attributes as needed
         }
 
 class Class(db.Model):
@@ -55,6 +54,14 @@ class Class(db.Model):
     green_carbon = db.Column(db.String)
     carbon_emmision = db.Column(db.String)
     blue_carbon = db.Column(db.String)
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'green_carbon': self.green_carbon,
+            'carbon_emmision': self.carbon_emmision,
+            'blue_carbon': self.blue_carbon,
+            
+        }
 
 class Wallet(db.Model):
     id = db.Column(db.Integer, primary_key = True)
