@@ -220,10 +220,10 @@ def users():
         )
         db.session.add(new_user)
         db.session.commit()
-        review_dict = new_user.to_dict()
+        user_dict = new_user.to_dict()
 
         response = make_response(
-            jsonify(review_dict), 201
+            jsonify(new_user), 201
         )
         return response
     
@@ -439,9 +439,11 @@ def channel_by_id(id):
 
             return response
         
-        
 
-
+# Error handlers
+@app.errorhandler(404)
+def not_found_error(e):
+    return make_response(jsonify({"error": "Not found"}), 404)
         
 
     
