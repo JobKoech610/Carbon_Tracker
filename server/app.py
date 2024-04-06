@@ -193,14 +193,7 @@ def classes_by_id(id):
             response = make_response(jsonify(response_body), 405)
             return response
 
-
-
-
-
-        
-
-    
-
+  
 
 
 
