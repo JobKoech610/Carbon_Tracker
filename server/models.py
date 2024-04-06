@@ -101,7 +101,6 @@ class User(db.Model):
             'phoneNumber': self.phoneNumber,
             'email': self.email,
             'password': self.password,
-            'companyName': self.companyName,
         }
 
 class Resource(db.Model):
