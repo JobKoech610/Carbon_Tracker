@@ -91,9 +91,9 @@ class User(db.Model):
     phoneNumber = db.Column(db.Integer)
     email = db.Column(db.String)
     password = db.Column(db.Integer)
-    companyName = db.Column(db.String)
     company_id =db.Column(db.Integer, db.ForeignKey("company.id"))    
     resouces = db.relationship("Resource", backref="user")
+    channel= db.relationship("Channel", backref="user")
     def to_dict(self):
         return {
             'id': self.id,
@@ -127,8 +127,7 @@ class Channel(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     partners  = db.Column(db.String)
     soultions = db.Column(db.String)
-    user_id = db.Column(db.Integer) 
-    resouces_id = db.Column(db.Integer) 
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     def to_dict(self):
         return {
             'id': self.id,

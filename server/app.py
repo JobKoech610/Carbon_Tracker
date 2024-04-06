@@ -216,14 +216,13 @@ def users():
             phoneNumber = request.form.get("phoneNumber"),
             email = request.form.get("email"),
             password = request.form.get("password"),
-            companyName =  request.form.get("companyName"),
         )
         db.session.add(new_user)
         db.session.commit()
         user_dict = new_user.to_dict()
 
         response = make_response(
-            jsonify(new_user), 201
+            jsonify(user_dict), 201
         )
         return response
     
