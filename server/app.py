@@ -203,7 +203,6 @@ def users():
                 "phoneNumber": user.phoneNumber,
                 "email": user.email,
                 "password": user.password,
-                "companyName" : user.companyName,
             }
             users.append(user_dict)
         response = make_response(
