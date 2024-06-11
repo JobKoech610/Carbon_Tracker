@@ -3,6 +3,7 @@
 from flask import Flask, jsonify, request, make_response
 from flask_migrate import Migrate
 from flask_restful import Api, Resource
+import jwt
 
 from models import db, Company, Class, Wallet, Chat, Payment, User, Resource, Channel
 
@@ -443,7 +444,86 @@ def channel_by_id(id):
 def not_found_error(e):
     return make_response(jsonify({"error": "Not found"}), 404)
         
+# @product_routes.route('/api/v1/User', methods=['GET'])
+# def view_all_user():
+#     page = int(request.args.get('page', 1))
+#     per_page = int(request.args.get('per_page', 10))
 
+#     # Query the products using pagination
+#     user = User.query.paginate(page=page, per_page=per_page, error_out=False)
+#     user_list= []
+#     for user in user.items:
+#         user_data= {
+#                 'id': user.id,
+#                 'username': user.username,
+#                 'phone number': user.phone_number,
+#                 'email': user.email,
+#                 'user_type' : user.user_type,
+#                 'status': user.status,
+#                 'password': user.password
+#             }
+#         user_list.append(user_data)
+
+#     return jsonify({
+#         'status': 'success',
+#         'data': user_list
+#     })
+
+
+# @product_routes.route('/api/v1/User/create', methods=['POST'])
+# def create_user():
+#     data = request.json
+
+#     username=data['username']
+#     phone_number=data['phone_number']
+#     password=data['password']
+#     email=data['email']                    
+#     user_type=data['user_type']
+#     status='Active'
+#     password_harsh= generate_password_hash(password)
+#     if User.query.filter_by(username=username).first():
+#         return jsonify({'error': 'Username already exist'}), 409
+#     if User.query.filter_by(email=email).first():
+#         return jsonify({'error': 'Email already exist'}), 409
+#     user= User(username=username, email=email, password=password_harsh, 
+#                user_type=user_type,status=status,phone_number=phone_number)
+
+#     db.session.add(user)
+#     db.session.commit()
+#     return jsonify({'message': 'User created successfully'}), 201
+
+
+
+# @product_routes.route('/api/v1/Login', methods=['POST'])
+# def login():
+#     username =request.json["username"]
+#     password =request.json["password"]
+#     user=User.query.filter_by(username=username).first()
+#     if  user and check_password_hash(user.password, password):
+#         access_token=generate_token(user)
+#         return jsonify({
+#             "access-token" : access_token
+#         }), 200
+#     else:
+#         return jsonify({
+#             'error' :"Invalid credentials",
+#         }),401
+
+
+
+# def generate_token(user):
+#     secret_key=current_app.config['JWT_SECRET_KEY']
+#     expiration= datetime.utcnow()+timedelta(days=1)
+#     payload={
+#         "sub":user.id,
+#         "user_id":user.id,
+#         "exp":expiration,
+#         "username":user.username,
+#         "email":user.email,
+#         "usertype":user.user_type
+#     }
+#     token=jwt.encode(payload, secret_key, algorithm= 'HS256')
+#     return token
     
 
 
