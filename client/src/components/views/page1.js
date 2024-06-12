@@ -1,4 +1,6 @@
-function page1(){
+import '../Styles/page1.css'
+
+function Page1(){
     return(
         <div className="features-container">
             <div className="features-header">
@@ -26,3 +28,5 @@ function page1(){
         </div>
     )
 }
+
+export default Page1
