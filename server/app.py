@@ -3,6 +3,7 @@
 from flask import Flask, jsonify, request, make_response
 from flask_migrate import Migrate
 from flask_restful import Api, Resource
+import jwt
 
 from models import db, Company, Class, Wallet, Chat, Payment, User, Resource, Channel
 
@@ -193,6 +194,83 @@ def classes_by_id(id):
             response = make_response(jsonify(response_body), 405)
             return response
 
+@app.route('/home-calc', methods=['GET', 'POST', 'DELETE'])
+def classes():
+    if request.method == 'GET':
+        home = []
+        for data in Home_calculator.query.all():
+            home_dict = {
+                "Electricty": data.Electricty,
+                "Cooking_gas": data.Cooking_gas
+                "Diesel": data.Diesel,
+                "Coal": data.Coal,
+                "Biomass": data.Biomass,
+                "Total": data.Total                
+            }
+            home.append(home_dict)
+        response = make_response(
+            jsonify(home),
+            200
+        )
+        return response
+    elif request.method == 'POST':
+        new_home = Home_calculator(
+            Electricty = request.form.get("Electricty"),
+            Cooking_gas = request.form.get("Cooking_gas"),
+            Diesel = request.form.get("Diesel"),
+            Coal = request.form.get("Coal"),
+            Biomass = request.form.get("Biomass"),
+            Total= request.form.get("Total"),          
+        )    
+        db.session.add(new_home)
+        db.session.commit()
+        home_dict = new_home.to_dict()
+
+        response = make_response(
+            jsonify(home_dict),
+            201
+        )
+        return response
+
+@app.route('/fact-calc', methods=['GET', 'POST', 'DELETE'])
+def classes():
+    if request.method == 'GET':
+        factory = []
+        for data in Factory_calculator.query.all():
+            fact_dict = {
+                "type": data.type,
+                "Electricty": data.Electricty
+                "vehicles": data.vehicles,
+                "Distance": data.Distance,
+                "Diesel": data.Diesel,
+                "Natural_gas": data.Natural_gas,
+                "Total": data.Total                
+            }
+            factory.append(fact_dict)
+        response = make_response(
+            jsonify(factory),
+            200
+        )
+        return response
+    elif request.method == 'POST':
+        new_fact = Factory_calculator(
+            type = request.form.get("type"),
+            Electricty = request.form.get("Electricty"),
+            vehicles = request.form.get("vehicles"),
+            Distance = request.form.get("Distance"),
+            Diesel = request.form.get("Diesel"),
+            Natural_gas = request.form.get("Natural_gas"),
+            Total= request.form.get("Total"),          
+        )    
+        db.session.add(new_fact)
+        db.session.commit()
+        fact_dict = new_fact.to_dict()
+
+        response = make_response(
+            jsonify(fact_dict),
+            201
+        )
+        return response        
   
 
 

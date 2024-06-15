@@ -72,18 +72,50 @@ class Wallet(db.Model):
     buy = db.Column(db.Integer)
     deposit = db.Column(db.Integer)
     transfer = db.Column(db.Integer)
-    company_id =db.Column(db.Integer, db.ForeignKey("company.id"))    
+    company_id =db.Column(db.Integer, db.ForeignKey("company.id")) 
+    
+def to_dict(self):
+    return {
+        'id': self.id,
+        'balance': self.balance,
+        'bonus': self.bonus,
+        'carbon_credits': self.carbon_credits,
+        'pricing': self.pricing,
+        'currency': self.currency,
+        'buy': self.buy,
+        'deposit': self.deposit,
+        'withdraw': self.withdraw,
+        'transfer': self.transfer,
+        
+    }   
 
 class Chat(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     class_id = db.Column(db.Integer)
-    company_id =db.Column(db.Integer, db.ForeignKey("company.id"))    
+    company_id =db.Column(db.Integer, db.ForeignKey("company.id")) 
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'class_id': self.class_id,
+            'company_id': self.company_id,
+        }  
+        
+
 
 class Payment(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     ammount =  db.Column(db.Integer)
     to_us = db.Column(db.String)
-    company_id =db.Column(db.Integer, db.ForeignKey("company.id"))    
+    company_id =db.Column(db.Integer, db.ForeignKey("company.id")) 
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'ammount': self.ammount,
+            'to_us': self.to_us,
+            'company_id': self.company_id,
+        }   
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key = True)
@@ -91,9 +123,17 @@ class User(db.Model):
     phoneNumber = db.Column(db.Integer)
     email = db.Column(db.String)
     password = db.Column(db.Integer)
-    companyName = db.Column(db.String)
     company_id =db.Column(db.Integer, db.ForeignKey("company.id"))    
     resouces = db.relationship("Resource", backref="user")
+    channel= db.relationship("Channel", backref="user")
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'phoneNumber': self.phoneNumber,
+            'email': self.email,
+            'password': self.password,
+        }
 
 class Resource(db.Model):
     id = db.Column(db.Integer, primary_key = True)    
@@ -101,6 +141,12 @@ class Resource(db.Model):
     events = db.Column(db.String)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     chan = db.relationship("Channel", secondary=resouces_channel, backref="channels")
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'articles': self.articles,
+            'events': self.events,
+        }
       
 
 # class Resources_channel(db.Model):
@@ -111,9 +157,33 @@ class Resource(db.Model):
 class Channel(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     partners  = db.Column(db.String)
-    resouces_id = db.Column(db.Integer)
     soultions = db.Column(db.String)
-    user_id = db.Column(db.Integer)  
-    
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'partners': self.partners,
+            'solutions': self.soultions,
+        }
+
+class Home_calculator(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    Electricty = db.Column(db.String)
+    Cooking_gas = db.Column(db.String)
+    Diesel = db.Column(db.String)
+    Coal = db.Column(db.String)
+    Biomass = db.Column(db.String)
+    Total = db.Column(db.Integer)
+
+class Factory_calculator(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    type  = db.Column(db.String)
+    Electricty = db.Column(db.Integer)
+    vehicles = db.Column(db.Integer)
+    Distance = db.Column(db.Integer)
+    Diesel = db.Column(db.Integer)
+    Natural_gas = db.Column(db.Integer)
+    Total = db.Column(db.Integer)
+
 
 
