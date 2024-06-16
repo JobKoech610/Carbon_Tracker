@@ -5,7 +5,7 @@ from flask_migrate import Migrate
 from flask_restful import Api, Resource
 import jwt
 
-from models import db, Company, Class, Wallet, Chat, Payment, User, Resource, Channel
+from models import db, Company, Class, Wallet, Chat, Payment, User, Resource, Channel, Home_calculator, Factory_calculator
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
