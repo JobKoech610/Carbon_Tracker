@@ -195,13 +195,13 @@ def classes_by_id(id):
             return response
 
 @app.route('/home-calc', methods=['GET', 'POST', 'DELETE'])
-def classes():
+def homecalc():
     if request.method == 'GET':
         home = []
         for data in Home_calculator.query.all():
             home_dict = {
                 "Electricty": data.Electricty,
-                "Cooking_gas": data.Cooking_gas
+                "Cooking_gas": data.Cooking_gas,
                 "Diesel": data.Diesel,
                 "Coal": data.Coal,
                 "Biomass": data.Biomass,
@@ -233,13 +233,13 @@ def classes():
         return response
 
 @app.route('/fact-calc', methods=['GET', 'POST', 'DELETE'])
-def classes():
+def factorycalc():
     if request.method == 'GET':
         factory = []
         for data in Factory_calculator.query.all():
             fact_dict = {
                 "type": data.type,
-                "Electricty": data.Electricty
+                "Electricty": data.Electricty,
                 "vehicles": data.vehicles,
                 "Distance": data.Distance,
                 "Diesel": data.Diesel,
