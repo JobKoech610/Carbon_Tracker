@@ -166,6 +166,7 @@ class Channel(db.Model):
             'solutions': self.soultions,
         }
 
+    
 class Home_calculator(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     Electricty = db.Column(db.String)
@@ -174,6 +175,17 @@ class Home_calculator(db.Model):
     Coal = db.Column(db.String)
     Biomass = db.Column(db.String)
     Total = db.Column(db.Integer)
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'Electricty': self.Electricty,
+            'Cooking_gas': self.Cooking_gas,
+            'Diesel': self.Diesel,
+            'Coal': self.Coal,
+            'Biomass': self.Biomass,
+            'Total': self.Total,
+        }
+
 
 class Factory_calculator(db.Model):
     id = db.Column(db.Integer, primary_key = True)
@@ -184,6 +196,17 @@ class Factory_calculator(db.Model):
     Diesel = db.Column(db.Integer)
     Natural_gas = db.Column(db.Integer)
     Total = db.Column(db.Integer)
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'type': self.type ,
+            'Electricty': self.Electricty,
+            'vehicles': self.vehicles,
+            'Distance': self.Distance,
+            'Diesel': self.Diesel,
+            'Natural_gas': self.Natural_gas,
+            'Total': self.Total,
+        }
 
 
 
