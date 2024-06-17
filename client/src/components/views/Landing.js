@@ -7,9 +7,9 @@ function Landing() {
   return (
     <div className='container-l'>
         <div className='side-right'>
-        <h1>Welcome to Green Carbon Tracker</h1>
-        <p>Track, reduce, and offset your carbon emissions with ease.</p>
-        <button className='btn'>Get started</button>
+          <h1>Welcome to Green Carbon Tracker</h1>
+          <p>Track, reduce, and offset your carbon emissions with ease.</p>
+          <button className='btn'>Get started</button>
         </div>
 
         <div className='side-left'>

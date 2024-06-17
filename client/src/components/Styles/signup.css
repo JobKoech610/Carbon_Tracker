@@ -1,15 +1,10 @@
-/* SignUp.css */
-
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+    background-color: #01270a;
     margin: 0;
+    padding: 0;
+    
 }
-
 .signup-container {
     display: flex;
     justify-content: center;

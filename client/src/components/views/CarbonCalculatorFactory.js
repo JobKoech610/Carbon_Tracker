@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import '../Styles/calculator.css'
 
 function CarbonCalculatorFactory() {
   const [formData, setFormData] = useState({
@@ -72,9 +73,9 @@ function CarbonCalculatorFactory() {
   };
 
   return (
-    <div>
+    <div className='calculator-container' >
       <h3>Home Carbon Calculator</h3>
-      <div>
+      <div className='sub-container'>
         <form onSubmit={handleSubmit}>
           <label>Electricity (kWh)</label>
           <input type='number' name='electricity' value={formData.electricity} onChange={handleChange} />
@@ -96,7 +97,7 @@ function CarbonCalculatorFactory() {
       </div>
 
       {totalEmissions !== null && (
-        <div>
+        <div className='calculator-answer'>
           <h4>Total Carbon Emissions: {totalEmissions.toFixed(2)} kg CO₂e</h4>
           <h4>Carbon Offsets Needed: {offsetsNeeded.toFixed(2)} metric tons</h4>
           <h4>To Offsets your carbon footprint it costs: {`USD ${costOffset}`}</h4>

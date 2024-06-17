@@ -10,9 +10,9 @@ const FAQItem = ({ question, answer }) => {
 
     return (
         <div>
-            <div className='title-line'>
+            <div className='title-line' onClick={toggleAnswerVisibility}>
                 <h3 className='title'>{question}</h3>
-                <div className='symbol' onClick={toggleAnswerVisibility} style={{ cursor: 'pointer', display: 'inline-block', marginLeft: '10px' }}>
+                <div className='symbol'>
                     {isAnswerVisible ? '-' : '+'}
                 </div>
             </div>
