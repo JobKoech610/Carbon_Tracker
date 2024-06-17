@@ -16,10 +16,10 @@ function Page5() {
 
             <div>
                 <div>
-                    <button onClick={() => switchPage('home')}>Home</button>
+                    <button onClick={() => switchPage('home')}>Factory</button>
                 </div>
                 <div>
-                    <button onClick={() => switchPage('factory')}>Factory</button>
+                    <button onClick={() => switchPage('factory')}>Home</button>
                 </div>
             </div>
 

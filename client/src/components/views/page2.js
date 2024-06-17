@@ -1,7 +1,11 @@
 import React from 'react';
 import '../Styles/page2.css'
+import { useNavigate } from "react-router-dom";
 
 function Page2() {
+
+    const navigate = useNavigate();
+
     return (
         <div className="how-it-works-container">
             <div className="how-it-works-header">
@@ -9,7 +13,7 @@ function Page2() {
                 <p>Illustrates the process of tracking emissions using the Green Carbon Tracker, highlighting the steps involved</p>
             </div>
             <div className="steps-grid">
-                <div className="step-card">
+                <div className="step-card" onClick={() => navigate("/signUp")}>
                     <div className="step-number">1</div>
                     <h2>Step 1: Sign Up</h2>
                     <p>Sign up for an account on the Green Carbon Tracker platform, providing basic information</p>
