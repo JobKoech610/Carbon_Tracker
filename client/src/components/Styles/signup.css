@@ -6,6 +6,8 @@ body {
     
 }
 .signup-container {
+    position: relative;
+    margin-top: 8rem;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -18,7 +20,7 @@ body {
     padding: 2rem;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 300px;
+    width: 800px;
     display: flex;
     flex-direction: column;
 }
@@ -42,6 +44,7 @@ body {
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    align-items: center;
 }
 
 .signup-form button:hover {
