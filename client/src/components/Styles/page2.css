@@ -11,6 +11,7 @@ body {
     padding: 2rem;
     text-align: center;
     color: #333;
+    height: 100vh;
 }
 
 .how-it-works-header h1 {
