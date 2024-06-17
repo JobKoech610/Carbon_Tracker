@@ -4,7 +4,8 @@ from flask import Flask, jsonify, request, make_response
 from flask_migrate import Migrate
 from flask_restful import Api, Resource
 
-from models import db, Company, Class, Wallet, Chat, Payment, User, Resource, Channel
+
+from models import db, Company, Class, Wallet, Chat, Payment, User, Resource, Channel, Home_calculator, Factory_calculator
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
@@ -192,13 +193,417 @@ def classes_by_id(id):
             }
             response = make_response(jsonify(response_body), 405)
             return response
+        
+@app.route('/users', methods=['GET', 'POST', 'DELETE'])
+def users():
+    if request.method == 'GET':
+        users=[]
+        for user in User.query.all():
+            user_dict = {
+                "name": user.name,
+                "phoneNumber": user.phoneNumber,
+                "email": user.email,
+                "password": user.password,
+            }
+            users.append(user_dict)
+        response = make_response(
+            jsonify(users), 200
+        )
+        return response
+    elif request.method == 'POST':
+        new_user= User(
+            name = request.form.get("name"),
+            phoneNumber = request.form.get("phoneNumber"),
+            email = request.form.get("email"),
+            password = request.form.get("password"),
+        )
+        db.session.add(new_user)
+        db.session.commit()
+        user_dict = new_user.to_dict()
 
+        response = make_response(
+            jsonify(user_dict), 201
+        )
+        return response
+    
+@app.route('/users/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
+def users_by_id(id):
+    user = User.query.filter_by(id=id).first()
+    if user == None:
+        response_body ={
+            "message": "This user doesn't exist"
+        }
+        response = make_response(jsonify(response_body), 404)
+        return response
+    else: 
+        if response.method == "GET":
+            user_dict = user.to_dict()
+            response = make_response(
+                jsonify(user.to_dict()), 200
+            )
+            return response
+        elif request.method == 'PATCH':
+            user = User.query.filter_by(id=id).first()
+            for attr in request.form:
+                setattr(user, attr, request.form.get(attr))
+            
+            db.session.add(user)
+            db.session.commit()
 
+            user_dict = user.to_dict()
+            response = make_response(
+                jsonify(user_dict)
+            )
+            return response
+        elif request.method == 'DELETE':
+            db.session.delete(user)
+            db.session.commit()
+            response_body ={
+                "delete_successful" :True,
+                "message" : "User Deleted"
+            }
+            response = make_response(
+                jsonify(response_body), 200
+            )
+            return response
+        else:
+            # Handle unsupported methods
+            response_body = {
+                "message": "Method not allowed for this endpoint."
+            }
+            response = make_response(jsonify(response_body), 405)
+            return response
+        
+@app.route('/resource', methods=['GET', 'POST', 'DELETE'])
+def resources():
+    if request.method == 'GET':
+        resources = []
+        for resource in Resource.query.all():
+            # company_dict = company.to_dict()
+            resource_dict = {
+                "articles": resource.articles,
+                "events": resource.events,
+                
+            }
+            resources.append(resource_dict)
+        response = make_response(
+            jsonify(resources),
+            200
+        )    
+        return response
+    elif request.method == 'POST':
+        new_resource = Resource(
+            articles = request.form.get("articles"),
+            events= request.form.get("events"),           
+        )    
+        db.session.add(new_resource)
+        db.session.commit()
+        resource_dict= new_resource.to_dict()
 
+        response = make_response(
+            jsonify(resource_dict),
+            201
+        )
+        return response
+@app.route('/resource/<int:id>', methods=['GET','PATCH','DELETE'])
+def resource_by_id(id):
+    resourc=  Resource.query.filter_by(id=id).first() 
+    if resourc == None:
+        response_body = {
+            "message": "This record does not exist in our database. Please try again."
+        }
+        response = make_response(jsonify(response_body), 404)
+        return response
+    else:
+        if request.method == "DELETE":
+            db.session.delete(resourc)
+            db.session.commit()
+            response_body = {
+                "delete_successful": True,
+                "message": "company deleted."
+            }
+            response = make_response(
+                jsonify(response_body),
+                200
+            )
+            return response
+        elif request.method == 'GET':
+            resourc_dict = resourc.to_dict()
+            response = make_response(
+                jsonify(resourc_dict),
+                200
+            )
+            return response 
+        elif request.method == 'PATCH':
+            resourc = Resource.query.filter_by(id=id).first()
+            for attr in request.form:
+                setattr(resourc, attr, request.form.get(attr))
+            db.session.add(resourc)
+            db.session.commit()
+            resourc_dict = resourc.to_dict()
+            response = make_response(
+                jsonify(resourc_dict),
+                200
+            )
+            return response  
+        else:
+            # Handle unsupported methods
+            response_body = {
+                "message": "Method not allowed for this endpoint."
+            }
+            response = make_response(jsonify(response_body), 405)
+            return response\
 
+@app.route('/channel', methods=['GET', 'POST', 'DELETE'])
+def channel():
+    if request.method == 'GET':
+        channel= []
+        for channel in Channel.query.all():
+            channel_dict = {
+                "partners": channel.partners,
+                "resources_id": channel.resources_id,
+                "solutions": channel.solutions,
+                "user_id": channel.user_id,
+            }
+            channel.append(channel_dict)
+        response = make_response(
+            jsonify(channel),
+            200
+        )    
+        return response
+    elif request.method == 'POST':
+        new_channel = Channel(
+            partners = request.form.get("partners"),
+            resources_id = request.form.get("resources_id"),
+            solutions = request.form.get("solutions"),
+            user_id= request.form.get("user_id"),
+        )    
+        db.session.add(new_channel)
+        db.session.commit()
+        channel_dict = new_channel.to_dict()
 
+        response = make_response(
+            jsonify(channel_dict),
+            201
+        )
+        return response
+
+@app.route('/channel/<int:id>', methods=['GET','PATCH','DELETE'])
+def channel_by_id(id):
+    channels =  Channel.query.filter_by(id=id).first() 
+    if channels == None:
+        response_body = {
+            "message": "This record does not exist in our database. Please try again."
+        }
+        response = make_response(jsonify(response_body), 404)
+
+        return response
+    else:
+        if request.method == "DELETE":
+            db.session.delete(channels)
+            db.session.commit()
+            response_body = {
+                "delete_successful": True,
+                "message": "company deleted."
+            }
+            response = make_response(
+                jsonify(response_body),
+                200
+            )
+            return response
+        elif request.method == 'GET':
+            channels_dict = channels.to_dict()
+
+            response = make_response(
+                jsonify(channels_dict),
+                200
+            )
+
+            return response
+        elif request.method == 'PATCH':
+            channels = Channel.query.filter_by(id=id).first()
+
+            for attr in request.form:
+                setattr(channels, attr, request.form.get(attr))
+
+            db.session.add(channels)
+            db.session.commit()
+
+            channels_dict = channels.to_dict()
+
+            response = make_response(
+                jsonify(channels_dict),
+                200
+            )
+
+            return response
         
 
+# Error handlers
+@app.errorhandler(404)
+def not_found_error(e):
+    return make_response(jsonify({"error": "Not found"}), 404)
+
+
+@app.route('/home-calc', methods=['GET', 'POST', 'DELETE'])
+def homecalc():
+    if request.method == 'GET':
+        home = []
+        for data in Home_calculator.query.all():
+            home_dict = {
+                "Electricty": data.Electricty,
+                "Cooking_gas": data.Cooking_gas,
+                "Diesel": data.Diesel,
+                "Coal": data.Coal,
+                "Biomass": data.Biomass,
+                "Total": data.Total                
+            }
+            home.append(home_dict)
+        response = make_response(
+            jsonify(home),
+            200
+        )
+        return response
+    elif request.method == 'POST':
+        new_home = Home_calculator(
+            Electricty = request.form.get("Electricty"),
+            Cooking_gas = request.form.get("Cooking_gas"),
+            Diesel = request.form.get("Diesel"),
+            Coal = request.form.get("Coal"),
+            Biomass = request.form.get("Biomass"),
+            Total= request.form.get("Total"),          
+        )    
+        db.session.add(new_home)
+        db.session.commit()
+        home_dict = new_home.to_dict()
+
+        response = make_response(
+            jsonify(home_dict),
+            201
+        )
+        return response
+
+@app.route('/fact-calc', methods=['GET', 'POST', 'DELETE'])
+def factorycalc():
+    if request.method == 'GET':
+        factory = []
+        for data in Factory_calculator.query.all():
+            fact_dict = {
+                "type": data.type,
+                "Electricty": data.Electricty,
+                "vehicles": data.vehicles,
+                "Distance": data.Distance,
+                "Diesel": data.Diesel,
+                "Natural_gas": data.Natural_gas,
+                "Total": data.Total                
+            }
+            factory.append(fact_dict)
+        response = make_response(
+            jsonify(factory),
+            200
+        )
+        return response
+    elif request.method == 'POST':
+        new_fact = Factory_calculator(
+            type = request.form.get("type"),
+            Electricty = request.form.get("Electricty"),
+            vehicles = request.form.get("vehicles"),
+            Distance = request.form.get("Distance"),
+            Diesel = request.form.get("Diesel"),
+            Natural_gas = request.form.get("Natural_gas"),
+            Total= request.form.get("Total"),          
+        )    
+        db.session.add(new_fact)
+        db.session.commit()
+        fact_dict = new_fact.to_dict()
+
+        response = make_response(
+            jsonify(fact_dict),
+            201
+        )
+        return response        
+  
+        
+# @product_routes.route('/api/v1/User', methods=['GET'])
+# def view_all_user():
+#     page = int(request.args.get('page', 1))
+#     per_page = int(request.args.get('per_page', 10))
+
+#     # Query the products using pagination
+#     user = User.query.paginate(page=page, per_page=per_page, error_out=False)
+#     user_list= []
+#     for user in user.items:
+#         user_data= {
+#                 'id': user.id,
+#                 'username': user.username,
+#                 'phone number': user.phone_number,
+#                 'email': user.email,
+#                 'user_type' : user.user_type,
+#                 'status': user.status,
+#                 'password': user.password
+#             }
+#         user_list.append(user_data)
+
+#     return jsonify({
+#         'status': 'success',
+#         'data': user_list
+#     })
+
+
+# @product_routes.route('/api/v1/User/create', methods=['POST'])
+# def create_user():
+#     data = request.json
+
+#     username=data['username']
+#     phone_number=data['phone_number']
+#     password=data['password']
+#     email=data['email']                    
+#     user_type=data['user_type']
+#     status='Active'
+#     password_harsh= generate_password_hash(password)
+#     if User.query.filter_by(username=username).first():
+#         return jsonify({'error': 'Username already exist'}), 409
+#     if User.query.filter_by(email=email).first():
+#         return jsonify({'error': 'Email already exist'}), 409
+#     user= User(username=username, email=email, password=password_harsh, 
+#                user_type=user_type,status=status,phone_number=phone_number)
+
+#     db.session.add(user)
+#     db.session.commit()
+#     return jsonify({'message': 'User created successfully'}), 201
+
+
+
+# @product_routes.route('/api/v1/Login', methods=['POST'])
+# def login():
+#     username =request.json["username"]
+#     password =request.json["password"]
+#     user=User.query.filter_by(username=username).first()
+#     if  user and check_password_hash(user.password, password):
+#         access_token=generate_token(user)
+#         return jsonify({
+#             "access-token" : access_token
+#         }), 200
+#     else:
+#         return jsonify({
+#             'error' :"Invalid credentials",
+#         }),401
+
+
+
+# def generate_token(user):
+#     secret_key=current_app.config['JWT_SECRET_KEY']
+#     expiration= datetime.utcnow()+timedelta(days=1)
+#     payload={
+#         "sub":user.id,
+#         "user_id":user.id,
+#         "exp":expiration,
+#         "username":user.username,
+#         "email":user.email,
+#         "usertype":user.user_type
+#     }
+#     token=jwt.encode(payload, secret_key, algorithm= 'HS256')
+#     return token
     
 
 
