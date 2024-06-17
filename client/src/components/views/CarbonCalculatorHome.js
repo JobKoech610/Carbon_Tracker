@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 
-function Carbon_calculator_Factory() {
+function CarbonCalculatorHome() {
   const [formData, setFormData] = useState({
     electricity: '',
     cookingGas: '',
-    heating_oil: '',
-    natural_gas: '',
-    waste: '',
-    vehicle: '',
-    water: ''
+    diesel: '',
+    coal: '',
+    biomass: ''
   });
 
   const [totalEmissions, setTotalEmissions] = useState(null);
@@ -16,13 +14,11 @@ function Carbon_calculator_Factory() {
   const [costOffset, setPurchaseOffsets] = useState(null)
 
   const emissionFactors = {
-    electricity: 0.92,    // kg CO₂e per kWh (U.S. average)
-    natural_gas: 5.3,     // kg CO₂e per therm
-    heating_oil: 10.21,   // kg CO₂e per gallon
-    cookingGas: 5.75,        // kg CO₂e per gallon
-    waste: 0.44,          // kg CO₂e per pound
-    water: 0.001,         // kg CO₂e per gallon
-    vehicle: 0.404        // kg CO₂e per mile
+    electricity: 0.92, // kg CO₂e per kWh (U.S. average)
+    cookingGas: 5.3,   // kg CO₂e per therm
+    diesel: 10.21,     // kg CO₂e per gallon
+    coal: 2.86,        // kg CO₂e per kg
+    biomass: 0.44      // kg CO₂e per pound
   };
 
   const handleChange = (e) => {
@@ -37,11 +33,9 @@ function Carbon_calculator_Factory() {
     const emissions = {
       electricity: data.electricity * emissionFactors.electricity,
       cookingGas: data.cookingGas * emissionFactors.cookingGas,
-      heating_oil: data.heating_oil * emissionFactors.heating_oil,
-      natural_gas: data.natural_gas * emissionFactors.natural_gas,
-      waste: data.waste * emissionFactors.waste,
-      vehicle: data.vehicle * emissionFactors.vehicle,
-      water: data.water * emissionFactors.water
+      diesel: data.diesel * emissionFactors.diesel,
+      coal: data.coal * emissionFactors.coal,
+      biomass: data.biomass * emissionFactors.biomass
     };
 
     const total = Object.values(emissions).reduce((acc, val) => acc + (isNaN(val) ? 0 : val), 0);
@@ -73,24 +67,20 @@ function Carbon_calculator_Factory() {
 
   return (
     <div>
-      <h3>Home Carbon Calculator</h3>
+      <h3> Factory Carbon Calculator</h3>
       <div>
         <form onSubmit={handleSubmit}>
           <label>Electricity (kWh)</label>
           <input type='number' name='electricity' value={formData.electricity} onChange={handleChange} />
           <label>Cooking Gas (therms)</label>
           <input type='number' name='cookingGas' value={formData.cookingGas} onChange={handleChange} />
-          <label>heating_oil (Liters)</label>
-          <input type='number' name='heating_oil' value={formData.heating_oil} onChange={handleChange} />
-          <label>natural_gas (kg)</label>
-          <input type='number' name='natural_gas' value={formData.natural_gas} onChange={handleChange} />
-          <label>waste (pounds)</label>
-          <input type='number' name='waste' value={formData.waste} onChange={handleChange} />
-          <label>vehicle (Kilometers travelled)</label>
-          <input type='number' name='vehicle' value={formData.vehicle} onChange={handleChange} />
-          <label>water(pounds)</label>
-          <input type='number' name='water' value={formData.water} onChange={handleChange} />
-          <br/>
+          <label>Diesel (gallons)</label>
+          <input type='number' name='diesel' value={formData.diesel} onChange={handleChange} />
+          <label>Coal (kg)</label>
+          <input type='number' name='coal' value={formData.coal} onChange={handleChange} />
+          <label>Biomass (pounds)</label>
+          <input type='number' name='biomass' value={formData.biomass} onChange={handleChange} />
+          
           <button type='submit'>Submit</button>
         </form>
       </div>
@@ -107,4 +97,4 @@ function Carbon_calculator_Factory() {
   );
 }
 
-export default Carbon_calculator_Factory;
+export default CarbonCalculatorHome;
