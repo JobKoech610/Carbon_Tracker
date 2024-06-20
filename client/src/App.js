@@ -4,7 +4,7 @@ import './App.css';
 import SignUp from './components/views/signUp';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import HomePage from './components/views/HomePage';
-
+import Login from './components/views/Login';
 
 
 function App() {
@@ -16,6 +16,8 @@ function App() {
           <Route path="/signUp" element={<SignUp />} />
         </Routes>
       </Router>
+
+      <Login />
     </div>
   );
 }

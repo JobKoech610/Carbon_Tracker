@@ -1,39 +1,36 @@
-import { useState } from "react"
-import '../Styles/signup.css'
+import { useState } from "react";
+import '../Styles/signup.css';
 
 function SignUp() {
     const [formData, setFormData] = useState({
-        firstName: "",
-        lastName: "",
+        name: "",
+        phoneNumber: "",
         email: "",
         password: "",
-        confirmPassword: ""
-    })
+    });
 
-    const [error, setError] = useState("")
+    const [error, setError] = useState("");
 
     const handleOnChange = (e) => {
         setFormData({
             ...formData,
             [e.target.name]: e.target.value,
         });
-        setError("");
-    }
+        setError(""); // Clear error message on change
+    };
 
-    const validateForm=() =>{
-        if (!formData.firstName || !formData.lastName) {
-            alert("Please enter your full names");
+    const validateForm = () => {
+        if (!formData.name || !formData.phoneNumber) {
+            alert("Please enter your full name and phone number");
             return false;
-            } else if (!formData.email) {
-                alert("Please enter your email");
-                return false;   
-        } else if (formData.password !== formData.confirmPassword) {
-            alert("Passwords do not match")
+        } else if (!formData.email) {
+            alert("Please enter your email");
             return false;
-            }
-        else {
-            return true;
-            }
+        } else if (!formData.password) {
+            alert("Please enter your password");
+            return false;
+        }
+        return true;
     };
 
     const handleSubmit = (e) => {
@@ -45,24 +42,26 @@ function SignUp() {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    firstName: formData.firstName,
-                    lastName: formData.lastName,
+                    name: formData.name,
+                    phoneNumber: formData.phoneNumber,
                     email: formData.email,
                     password: formData.password,
-                    status: "active"
                 })
             };
-            fetch('http://127.0.0.1:5000/user', post)
+
+            console.log('Posting data:', JSON.stringify(formData));
+
+            fetch('http://127.0.0.1:5000/users', post)
                 .then(response => {
                     if (!response.ok) {
-                        alert("Email already exists");
+                        alert("Email already exists or there was an error");
                         return response.json().then(err => { throw new Error(err.error) });
-                        
                     }
                     return response.json();
                 })
                 .then(data => {
                     console.log('Success:', data);
+                    // Optionally, you can redirect or show a success message
                 })
                 .catch((error) => {
                     console.error('Error:', error);
@@ -70,24 +69,23 @@ function SignUp() {
                 });
         }
     };
-return (
-    <div className="signup-container">
 
-        <form className="signup-form" onSubmit={handleSubmit}>
-            <label>Firstname</label>
-            <input type="text" placeholder="Firstname"  onChange={handleOnChange} name="firstName" value={formData.firstName}/>
-            <label>Lastname</label>
-            <input type="text" placeholder="Lastname"  onChange={handleOnChange} name="lastName" value={formData.lastName}/> 
-            <label>email</label>
-            <input type="text" placeholder="Email"  onChange={handleOnChange} name="email" value={formData.email}/>
-            <label>Password</label>
-            <input type="text" placeholder="Password"  onChange={handleOnChange} name="password" value={formData.password}/>
-            <label>Confirm Password</label>
-            <input type="text" placeholder="Confirm Password"  onChange={handleOnChange} name="confirmPassword" value={formData.confirmPassword}/>
-            <button type="submit" onClick={(e)=>alert(e.target.value)}>SignUp</button>
-        </form>
-    </div>
-)
+    return (
+        <div className="signup-container">
+            <form className="signup-form" onSubmit={handleSubmit}>
+                <label>Firstname</label>
+                <input type="text" placeholder="Firstname" onChange={handleOnChange} name="name" value={formData.name} />
+                <label>Lastname</label>
+                <input type="text" placeholder="Lastname" onChange={handleOnChange} name="phoneNumber" value={formData.phoneNumber} />
+                <label>Email</label>
+                <input type="email" placeholder="Email" onChange={handleOnChange} name="email" value={formData.email} />
+                <label>Password</label>
+                <input type="password" placeholder="Password" onChange={handleOnChange} name="password" value={formData.password} />
+                <button type="submit">Sign Up</button>
+            </form>
+            {error && <p className="error-message">{error}</p>}
+        </div>
+    );
 }
 
 export default SignUp;
