@@ -1,8 +1,8 @@
-"""New DB instance
+"""create tables
 
-Revision ID: 1c839fd47f76
+Revision ID: b93e72db1382
 Revises: 
-Create Date: 2024-04-06 21:41:59.939053
+Create Date: 2024-06-20 12:28:37.517687
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '1c839fd47f76'
+revision = 'b93e72db1382'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -32,6 +32,27 @@ def upgrade():
     sa.Column('location', sa.String(), nullable=True),
     sa.Column('size', sa.Integer(), nullable=True),
     sa.Column('account', sa.String(), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('factory_calculator',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('type', sa.String(), nullable=True),
+    sa.Column('Electricty', sa.Integer(), nullable=True),
+    sa.Column('vehicles', sa.Integer(), nullable=True),
+    sa.Column('Distance', sa.Integer(), nullable=True),
+    sa.Column('Diesel', sa.Integer(), nullable=True),
+    sa.Column('Natural_gas', sa.Integer(), nullable=True),
+    sa.Column('Total', sa.Integer(), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('home_calculator',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('Electricty', sa.String(), nullable=True),
+    sa.Column('Cooking_gas', sa.String(), nullable=True),
+    sa.Column('Diesel', sa.String(), nullable=True),
+    sa.Column('Coal', sa.String(), nullable=True),
+    sa.Column('Biomass', sa.String(), nullable=True),
+    sa.Column('Total', sa.Integer(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('chat',
@@ -113,6 +134,8 @@ def downgrade():
     op.drop_table('payment')
     op.drop_table('company_class')
     op.drop_table('chat')
+    op.drop_table('home_calculator')
+    op.drop_table('factory_calculator')
     op.drop_table('company')
     op.drop_table('class')
     # ### end Alembic commands ###

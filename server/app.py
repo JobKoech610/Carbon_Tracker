@@ -3,18 +3,25 @@
 from flask import Flask, jsonify, request, make_response
 from flask_migrate import Migrate
 from flask_restful import Api, Resource
-
+from werkzeug.security import generate_password_hash,check_password_hash
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, JWTManager
+from sqlalchemy.exc import IntegrityError
+from datetime import datetime, timedelta
+from flask_jwt_extended import JWTManager
+from flask_cors import CORS
 
 from models import db, Company, Class, Wallet, Chat, Payment, User, Resource, Channel, Home_calculator, Factory_calculator
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['JWT_SECRET_KEY'] = '{~T<B#c&Y@oP}"C}pc7ajYR},Etow+Sc'
 
 migrate = Migrate(app, db)
 
 db.init_app(app)
-
+jwt= JWTManager(app)
+CORS(app)
 # api = Api(app)
 
 @app.route('/')
@@ -145,6 +152,7 @@ def classes():
             201
         )
         return response
+
 @app.route('/classes/<int:id>', methods=['GET','PATCH','DELETE'])
 def classes_by_id(id):
     clas =  Class.query.filter_by(id=id).first() 
@@ -211,20 +219,31 @@ def users():
         )
         return response
     elif request.method == 'POST':
-        new_user= User(
-            name = request.form.get("name"),
-            phoneNumber = request.form.get("phoneNumber"),
-            email = request.form.get("email"),
-            password = request.form.get("password"),
-        )
-        db.session.add(new_user)
-        db.session.commit()
-        user_dict = new_user.to_dict()
+        data = request.get_json()
+        try:
+            hashed_password = generate_password_hash(data.get('password'), method='pbkdf2:sha256', salt_length=16)
+            new_user = User(
+                name=data.get('name'),
+                phoneNumber=data.get('phoneNumber'),
+                email=data.get('email'),
+                password=hashed_password,
+            )
+            db.session.add(new_user)
+            db.session.commit()
+            user_dict = new_user.to_dict()
+            response = make_response(
+                jsonify(user_dict), 201
+            )
+            return response
+        except IntegrityError as e:
+            db.session.rollback()
+            if "duplicate key value violates unique constraint" in str(e.orig):
+                return jsonify({"error": "Email already exists"}), 400
+            return jsonify({"error": str(e.orig)}), 400
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
 
-        response = make_response(
-            jsonify(user_dict), 201
-        )
-        return response
+
     
 @app.route('/users/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 def users_by_id(id):
@@ -522,91 +541,85 @@ def factorycalc():
             201
         )
         return response        
-  
-        
-# @product_routes.route('/api/v1/User', methods=['GET'])
-# def view_all_user():
-#     page = int(request.args.get('page', 1))
-#     per_page = int(request.args.get('per_page', 10))
 
-#     # Query the products using pagination
-#     user = User.query.paginate(page=page, per_page=per_page, error_out=False)
-#     user_list= []
-#     for user in user.items:
-#         user_data= {
-#                 'id': user.id,
-#                 'username': user.username,
-#                 'phone number': user.phone_number,
-#                 'email': user.email,
-#                 'user_type' : user.user_type,
-#                 'status': user.status,
-#                 'password': user.password
-#             }
-#         user_list.append(user_data)
+@app.route('/login', methods = ['POST'])
+def login():
+    auth = request.get_json()
+    if not auth or not auth.get("email") or not auth.get("password"):
+        return make_response({
+            "message":"please ensure you have entered the correct details"
+        }), 401
 
-#     return jsonify({
-#         'status': 'success',
-#         'data': user_list
-#     })
+    user = User.query.filter_by(email=auth.get("email")).first()
+    if not user:
+        return make_response({
+            "message":"User not found"
+        }), 401
 
+    if user and check_password_hash(user.password, auth.get("password")):
+        expiration = timedelta(minutes = 30)
+        metadata = {
+            'id': user.id,
+            'name': user.name,
+            'phoneNumber': user.phoneNumber,
+            'email': user.email,
+            'password': user.password,
+        }
+        token = create_access_token(identity = user.id, additional_claims=metadata, expires_delta=expiration)
+        # return make_response(jsonify({
+        #     "token": token, "user_id":user.id, "metadata": metadata
+        # })), 201
+        return make_response(jsonify({
+            "token": token,
+            "user_id": user.id,
+            "name": user.name,
+            "email": user.email,
+            "metadata": metadata,
+        })), 201
+    return make_response({
+        "message": "Invalid email or password"
+    }), 401
 
-# @product_routes.route('/api/v1/User/create', methods=['POST'])
-# def create_user():
-#     data = request.json
+@app.route('/signup', methods = ['POST'])
+def signup():
+    data = request.get_json()
 
-#     username=data['username']
-#     phone_number=data['phone_number']
-#     password=data['password']
-#     email=data['email']                    
-#     user_type=data['user_type']
-#     status='Active'
-#     password_harsh= generate_password_hash(password)
-#     if User.query.filter_by(username=username).first():
-#         return jsonify({'error': 'Username already exist'}), 409
-#     if User.query.filter_by(email=email).first():
-#         return jsonify({'error': 'Email already exist'}), 409
-#     user= User(username=username, email=email, password=password_harsh, 
-#                user_type=user_type,status=status,phone_number=phone_number)
+    name = data.get('name')
+    phoneNumber = data.get('phoneNumber')
+    email = data.get('email')
+    password = data.get('password')
+    company_id=data.get('company_id')
 
-#     db.session.add(user)
-#     db.session.commit()
-#     return jsonify({'message': 'User created successfully'}), 201
+    # Check if all required fields are present
+    if not (name and phoneNumber and email and password):
+        return make_response({'error': 'Missing required fields'}, 400)
 
+    # Hash the password
+    hashed_password = generate_password_hash(password)
 
+    # Check if the email is already registered
+    # if User.query.filter_by(email=email).first():
+    #     return make_response({'error': 'Email already registered'}, 409)
 
-# @product_routes.route('/api/v1/Login', methods=['POST'])
-# def login():
-#     username =request.json["username"]
-#     password =request.json["password"]
-#     user=User.query.filter_by(username=username).first()
-#     if  user and check_password_hash(user.password, password):
-#         access_token=generate_token(user)
-#         return jsonify({
-#             "access-token" : access_token
-#         }), 200
-#     else:
-#         return jsonify({
-#             'error' :"Invalid credentials",
-#         }),401
+    # Create a new user
+    new_user = User(
+        name=name,
+        phoneNumber=phoneNumber,
+        email=email,
+        password=hashed_password,
+        company_id=company_id,
+    )
+    try:
+        # Add the user to the database
+        db.session.add(new_user)
+        db.session.commit()
 
-
-
-# def generate_token(user):
-#     secret_key=current_app.config['JWT_SECRET_KEY']
-#     expiration= datetime.utcnow()+timedelta(days=1)
-#     payload={
-#         "sub":user.id,
-#         "user_id":user.id,
-#         "exp":expiration,
-#         "username":user.username,
-#         "email":user.email,
-#         "usertype":user.user_type
-#     }
-#     token=jwt.encode(payload, secret_key, algorithm= 'HS256')
-#     return token
-    
-
-
+        # Return a success response
+        return make_response({'message': 'User created successfully'}, 201)
+    except IntegrityError:
+        return {
+            "error":"422"
+        }
 
 
 if __name__ == "__main__":
