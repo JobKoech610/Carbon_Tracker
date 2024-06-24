@@ -1,11 +1,14 @@
-import { useState } from "react";
-
+// LogIn.js
+import { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { UserContext } from "./UserContext";
 
 function LogIn() {
+    const { setUser } = useContext(UserContext);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState(null);
-
+    const navigate = useNavigate();
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -20,9 +23,8 @@ function LogIn() {
             const data = await response.json();
             if (data.token) {
                 localStorage.setItem('token', data.token);
-                console.log("Name:", data.name);
-                console.log("Email:", data.email);
-                console.log("Welcome")
+                setUser({ name: data.name, email: data.email });
+                navigate('/');
             } else {
                 setError(data.message || "Login failed");
             }
@@ -32,8 +34,8 @@ function LogIn() {
     };
 
     return (
-        <div>
-            <form onSubmit={handleLogin}>
+        <div className="signup-container">
+            <form className="signup-form" onSubmit={handleLogin}>
                 <label>Email</label>
                 <input
                     type="text"
@@ -52,7 +54,7 @@ function LogIn() {
                 <br />
                 <button type="submit">Login</button>
             </form>
-            {error && <p style={{ color: 'red' }}>{error}</p>} {/* Display error message */}
+            {error && <p style={{ color: 'red' }}>{error}</p>}
         </div>
     );
 }

@@ -23,6 +23,8 @@ html, body {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    position: relative;
+    top: 5rem;
 }
 
 h2 {

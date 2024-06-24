@@ -371,7 +371,7 @@ def resource_by_id(id):
                 "message": "Method not allowed for this endpoint."
             }
             response = make_response(jsonify(response_body), 405)
-            return response\
+            return response
 
 @app.route('/channel', methods=['GET', 'POST', 'DELETE'])
 def channel():

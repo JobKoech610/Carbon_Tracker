@@ -1,5 +1,7 @@
 import { useState } from "react";
 import '../Styles/signup.css';
+import { useNavigate } from "react-router-dom"
+
 
 function SignUp() {
     const [formData, setFormData] = useState({
@@ -8,6 +10,8 @@ function SignUp() {
         email: "",
         password: "",
     });
+
+    const navigate = useNavigate();
 
     const [error, setError] = useState("");
 
@@ -61,6 +65,7 @@ function SignUp() {
                 })
                 .then(data => {
                     console.log('Success:', data);
+                    navigate("/Login")
                     // Optionally, you can redirect or show a success message
                 })
                 .catch((error) => {
@@ -82,6 +87,8 @@ function SignUp() {
                 <label>Password</label>
                 <input type="password" placeholder="Password" onChange={handleOnChange} name="password" value={formData.password} />
                 <button type="submit">Sign Up</button>
+                <button onClick={() => navigate("/Login")}>Login</button>
+
             </form>
             {error && <p className="error-message">{error}</p>}
         </div>

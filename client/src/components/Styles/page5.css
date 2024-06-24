@@ -18,6 +18,8 @@ html, body {
     text-align: center;
     padding: 1.5rem;
     color: #666;
+    position: relative;
+    top:20rem;
 }
 
 h1 {
