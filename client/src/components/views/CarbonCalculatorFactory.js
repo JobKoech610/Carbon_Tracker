@@ -92,7 +92,7 @@ function CarbonCalculatorFactory() {
           <label>water(pounds)</label>
           <input type='number' name='water' value={formData.water} onChange={handleChange} />
           <br/>
-          <button type='submit'>Submit</button>
+          <button className='btn' type='submit'>Submit</button>
         </form>
       </div>
 

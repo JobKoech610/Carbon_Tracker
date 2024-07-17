@@ -23,8 +23,8 @@ html, body {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    position: relative;
-    top: 5rem;
+    position: absolute;
+    top: 10rem;
 }
 
 h2 {

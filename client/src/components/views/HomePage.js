@@ -9,7 +9,7 @@ import Page2 from "./page2";
 import Page3 from "./page3";
 import Page4 from "./page4";
 import Page5 from "./page5";
-
+import "../Styles/home.css"
 function HomePage() {
     const { user } = useContext(UserContext);
 
@@ -21,8 +21,10 @@ function HomePage() {
             <Page2 />
             <Page4 />
             <Page5 />
+            <div className="give-space">            
             <FAQ />
             <Contact />
+            </div>
              
         </>
     );

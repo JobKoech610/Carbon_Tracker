@@ -13,7 +13,7 @@ function CarbonCalculatorHome() {
   const [totalEmissions, setTotalEmissions] = useState(null);
   const [offsetsNeeded, setOffsetsNeeded] = useState(null);
   const [costOffset, setPurchaseOffsets] = useState(null)
-
+  
   const emissionFactors = {
     electricity: 0.92, // kg CO₂e per kWh (U.S. average)
     cookingGas: 5.3,   // kg CO₂e per therm
@@ -82,7 +82,7 @@ function CarbonCalculatorHome() {
           <label>Biomass (pounds)</label>
           <input type='number' name='biomass' value={formData.biomass} onChange={handleChange} />
           
-          <button type='submit'>Submit</button>
+          <button className='btn' type='submit'>Submit</button>
         </form>
       </div>
 
