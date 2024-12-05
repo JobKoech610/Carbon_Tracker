@@ -47,7 +47,6 @@ class Company(db.Model):
             'location': self.location,
             'size': self.size,
             'account': self.account,
-            # Add more attributes as needed
         }
 
 class Class(db.Model):
@@ -55,6 +54,14 @@ class Class(db.Model):
     green_carbon = db.Column(db.String)
     carbon_emmision = db.Column(db.String)
     blue_carbon = db.Column(db.String)
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'green_carbon': self.green_carbon,
+            'carbon_emmision': self.carbon_emmision,
+            'blue_carbon': self.blue_carbon,
+            
+        }
 
 class Wallet(db.Model):
     id = db.Column(db.Integer, primary_key = True)
@@ -116,9 +123,17 @@ class User(db.Model):
     phoneNumber = db.Column(db.Integer)
     email = db.Column(db.String)
     password = db.Column(db.Integer)
-    companyName = db.Column(db.String)
     company_id =db.Column(db.Integer, db.ForeignKey("company.id"))    
     resouces = db.relationship("Resource", backref="user")
+    channel= db.relationship("Channel", backref="user")
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'phoneNumber': self.phoneNumber,
+            'email': self.email,
+            'password': self.password,
+        }
 
 class Resource(db.Model):
     id = db.Column(db.Integer, primary_key = True)    
@@ -126,6 +141,12 @@ class Resource(db.Model):
     events = db.Column(db.String)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     chan = db.relationship("Channel", secondary=resouces_channel, backref="channels")
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'articles': self.articles,
+            'events': self.events,
+        }
       
 
 # class Resources_channel(db.Model):
@@ -136,9 +157,13 @@ class Resource(db.Model):
 class Channel(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     partners  = db.Column(db.String)
-    resouces_id = db.Column(db.Integer)
     soultions = db.Column(db.String)
-    user_id = db.Column(db.Integer)  
-    
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'partners': self.partners,
+            'solutions': self.soultions,
+        }
 
 
